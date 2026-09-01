@@ -1,214 +1,188 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
-import { portfolioData } from '../data/portfolioData';
-import { ProjectModal } from './ProjectModal';
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { ExternalLink, ArrowUpRight } from 'lucide-react'
 
-/* ─── Headline renderer: last word gets blue accent ─────────────────────── */
-function HeadlineWithAccent({ lines, highlightWord }) {
+const GithubIcon = ({ size = 14 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+  </svg>
+)
+import { useInView } from '../hooks/useInView'
+
+const projects = [
+  {
+    id: 'finance-management',
+    title: 'Financial Data & Invoice Management',
+    subtitle: 'BRS Finjasee Pvt. Ltd. · Apr 2024 – Apr 2025',
+    description:
+      'Handled 500+ monthly transactions including data entry, invoicing, and payment posting, improving processing speed by 30%. Resolved 50+ monthly vendor billing discrepancies, reducing payment delays by 25%.',
+    tags: ['Tally Accounting', 'MS Excel', 'Financial Reporting', 'Data Accuracy'],
+    image: '/assets/project_caretaker.jpg',
+    github: 'https://github.com',
+    live: null,
+    featured: true,
+  },
+  {
+    id: 'hackathon-challenge',
+    title: 'WEB-A-THON 2.0 (24h Hackathon Project)',
+    subtitle: 'ARENA · Lovely Professional University · Feb 2026',
+    description:
+      'Participated in the competitive 24-hour WEB-A-THON 2.0 Hackathon organized by ARENA at LPU in collaboration with MentorX and HoverRobotix. Developed functional software prototypes combining modern web interfaces with rapid algorithmic problem-solving under tight deadlines.',
+    tags: ['React.js', 'Python', 'JavaScript', 'Problem-Solving', 'Next.js'],
+    image: '/assets/project_iot.jpg',
+    github: 'https://github.com',
+    live: null,
+    featured: true,
+  },
+  {
+    id: 'nextjs-web-platform',
+    title: 'Next.js Modern Web Applications',
+    subtitle: 'Frontend & Full Stack Architecture',
+    description:
+      'Engineered dynamic, highly responsive web platforms utilizing Next.js (App Router), React.js, and Tailwind CSS with clean component structures, SEO optimization, and smooth animations.',
+    tags: ['Next.js', 'React.js', 'Tailwind CSS', 'TypeScript', 'Responsive Design'],
+    image: '/assets/project_visualizer.jpg',
+    github: 'https://github.com',
+    live: 'https://example.com',
+    featured: true,
+  },
+  {
+    id: 'education-delivery',
+    title: 'Interactive Teaching & Classroom Framework',
+    subtitle: 'Local School · Apr 2023 – Mar 2024',
+    description:
+      'Delivered targeted instruction and structured lesson plans that boosted student academic performance by 50% and increased classroom engagement by 70% using modern educational technology tools.',
+    tags: ['Classroom Management', 'MS Office', 'Time Management', 'Targeted Instruction'],
+    image: '/assets/project_line_fault.jpg',
+    github: null,
+    live: null,
+    featured: false,
+  },
+]
+
+export default function Projects() {
+  const { ref, inView } = useInView(0.1)
+  const [hoveredId, setHoveredId] = useState(null)
+
   return (
-    <h3 className="font-serif-editorial font-bold leading-[1.08] tracking-tight"
-        style={{ fontSize: 'clamp(2rem, 3.2vw, 3rem)' }}>
-      {lines.map((line, i) => {
-        const isLastLine = i === lines.length - 1;
-        if (isLastLine) {
-          // Replace the highlightWord in the last line with a blue span
-          const before = line.replace(highlightWord, '').trimEnd();
-          return (
-            <span key={i} className="block">
-              {before && <>{before} </>}
-              <span className="text-[#1D4ED8]">{highlightWord}</span>
-            </span>
-          );
-        }
-        return <span key={i} className="block">{line}</span>;
-      })}
-    </h3>
-  );
-}
-
-/* ─── Per-project scroll-zoom card ──────────────────────────────────────── */
-function ProjectCard({ project, onOpen }) {
-  const [hovered, setHovered] = useState(false);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const ref = useRef(null);
-
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ['start end', 'center center'],
-  });
-
-  const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 55,
-    damping: 22,
-    restDelta: 0.001,
-  });
-
-  const scale   = useTransform(smoothProgress, [0, 1], [0.84, 1.0]);
-  const opacity = useTransform(smoothProgress, [0, 0.35], [0.55, 1]);
-
-  return (
-    <div ref={ref} className="relative">
-      <motion.div
-        onClick={() => onOpen(project)}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        onMouseMove={(e) => {
-          const rect = e.currentTarget.getBoundingClientRect();
-          setMousePos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-        }}
-        className="relative rounded-2xl overflow-hidden border border-[#141414]/10"
-        style={{
-          scale,
-          opacity,
-          transformOrigin: 'center center',
-          cursor: 'none',
-          backgroundImage: `
-            linear-gradient(rgba(20,20,20,0.055) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(20,20,20,0.055) 1px, transparent 1px)
-          `,
-          backgroundSize: '36px 36px',
-          backgroundColor: '#FAFAF8',
-        }}
-      >
-        {/* Custom "View" cursor */}
+    <section id="projects" className="py-28 bg-[#FAF8F5]" ref={ref}>
+      <div className="max-w-6xl mx-auto px-6">
+        {/* Header */}
         <motion.div
-          className="pointer-events-none absolute z-50 flex items-center justify-center
-                     w-16 h-16 rounded-full bg-[#141414] text-white text-[11px]
-                     font-mono font-bold uppercase tracking-widest shadow-lg"
-          animate={{
-            x: mousePos.x - 32,
-            y: mousePos.y - 32,
-            scale: hovered ? 1 : 0,
-            opacity: hovered ? 1 : 0,
-          }}
-          transition={{ type: 'spring', stiffness: 300, damping: 25, mass: 0.5 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6 }}
+          className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6"
         >
-          View
-        </motion.div>
-        {/* ── Two-column grid ──────────────────────────────────────────── */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr]">
-
-          {/* ── LEFT: editorial content ─────────────────────────────── */}
-          <div className="flex flex-col justify-between px-10 py-10 md:px-14 md:py-12
-                          min-h-[480px] lg:min-h-[520px]">
-
-            {/* Top cluster */}
-            <div className="space-y-6">
-              {/* Category tag */}
-              <p className="text-[11px] font-mono text-[#9CA3AF] tracking-widest">
-                {project.tag}
-              </p>
-
-              {/* Giant headline with blue highlight */}
-              <HeadlineWithAccent
-                lines={project.headline}
-                highlightWord={project.highlightWord}
-              />
-
-              {/* Short description */}
-              <p className="text-[15px] text-[#374151] font-sans leading-relaxed max-w-sm">
-                {project.shortDesc}
-              </p>
-            </div>
-
-
-
-            {/* Bottom cluster */}
-            <div className="space-y-1.5 mt-auto">
-              {/* Blue accent line */}
-              <p className="font-handwriting text-lg text-[#1D4ED8] leading-snug">
-                {project.accentLine}
-              </p>
-              {/* Subline */}
-              <p className="text-[12px] font-mono text-[#9CA3AF] tracking-wide">
-                {project.accentSubline}
-              </p>
-
-              {/* Full title at very bottom */}
-              <p className="text-[13px] font-serif-editorial text-[#141414] font-medium
-                             pt-4 mt-2 border-t border-[#141414]/10">
-                {project.title}
-              </p>
-            </div>
-          </div>
-
-          {/* ── RIGHT: colored image panel ───────────────────────────── */}
-          <div
-            className="relative flex items-center justify-center p-10 md:p-12"
-            style={{ backgroundColor: project.panelColor }}
-          >
-            {/* Handwriting annotation top-right */}
-            <div className="absolute top-6 right-6 z-10 pointer-events-none text-right">
-              <p className="font-handwriting text-[15px] text-[#374151] leading-snug">
-                {project.annotation}
-              </p>
-            </div>
-
-            {/* Project image — centered, straight, rounded, shadow */}
-            <motion.div
-              className="w-full max-w-[360px] rounded-2xl overflow-hidden shadow-2xl border border-white/50"
-              animate={{ y: hovered ? -6 : 0 }}
-              transition={{ duration: 0.4, ease: 'easeOut' }}
-            >
-              <img
-                src={project.image}
-                alt={project.title}
-                className="w-full h-full object-cover"
-              />
-            </motion.div>
-          </div>
-
-        </div>
-      </motion.div>
-    </div>
-  );
-}
-
-/* ─── Section ────────────────────────────────────────────────────────────── */
-export function Projects() {
-  const { projects } = portfolioData;
-  const [selectedProject, setSelectedProject] = useState(null);
-
-  return (
-    <section
-      id="projects"
-      className="py-24 md:py-32 bg-[#FAF8F5] relative border-t border-[#141414]/10"
-    >
-      <div className="max-w-6xl mx-auto px-6 md:px-12">
-
-        {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 pb-6 border-b border-[#141414]/10">
           <div>
-            <span className="text-xs font-mono uppercase tracking-widest text-[#1D4ED8] block mb-2">
-              03 / Portfolio
-            </span>
-            <h2 className="font-serif-editorial text-4xl md:text-6xl text-[#141414] font-normal">
-              Selected Works
+            <p className="text-sm font-semibold tracking-[0.2em] uppercase text-[#1D4ED8] mb-3">
+              Work
+            </p>
+            <h2
+              className="font-display text-5xl md:text-6xl font-semibold text-[#141414] leading-tight"
+              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            >
+              Selected{' '}
+              <span className="italic">Projects</span>
             </h2>
           </div>
-          <p className="font-handwriting text-2xl text-[#6B7280] mt-4 md:mt-0">
-            editorial project showcases ✦
-          </p>
-        </div>
+          <a
+            href="https://github.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-sm font-semibold text-[#6B6B6B] hover:text-[#141414] transition-colors group"
+          >
+            All projects on GitHub
+            <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+          </a>
+        </motion.div>
 
-        {/* Cards */}
-        <div className="space-y-16 md:space-y-24">
-          {projects.map((project, index) => (
-            <ProjectCard
+        {/* Projects grid */}
+        <div className="grid md:grid-cols-2 gap-6">
+          {projects.map((project, i) => (
+            <motion.article
               key={project.id}
-              project={project}
-              index={index}
-              onOpen={setSelectedProject}
-            />
+              id={`project-${project.id}`}
+              initial={{ opacity: 0, y: 30 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.5, delay: i * 0.1 }}
+              onMouseEnter={() => setHoveredId(project.id)}
+              onMouseLeave={() => setHoveredId(null)}
+              className={`group relative rounded-2xl overflow-hidden border border-[#E2DDD7] cursor-pointer transition-all duration-400 ${
+                project.featured ? 'col-span-1' : 'col-span-1'
+              }`}
+            >
+              {/* Image */}
+              <div className="relative h-56 overflow-hidden bg-[#F0EDE8]">
+                <img
+                  src={project.image}
+                  alt={project.title}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#141414]/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                {/* Hover action buttons */}
+                <AnimatePresence>
+                  {hoveredId === project.id && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 10 }}
+                      className="absolute bottom-4 left-4 right-4 flex gap-2"
+                    >
+                      {project.github && (
+                        <a
+                          href={project.github}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/90 text-[#141414] text-xs font-semibold hover:bg-white transition-colors"
+                        >
+                        <GithubIcon size={12} />
+                          Code
+                        </a>
+                      )}
+                      {project.live && (
+                        <a
+                          href={project.live}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#1D4ED8] text-white text-xs font-semibold hover:bg-[#1e40af] transition-colors"
+                        >
+                          <ExternalLink size={12} />
+                          Live Demo
+                        </a>
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Content */}
+              <div className="p-6 bg-white group-hover:bg-[#FAFAFA] transition-colors">
+                <p className="text-xs text-[#6B6B6B] font-medium mb-1">{project.subtitle}</p>
+                <h3 className="font-semibold text-[#141414] text-lg mb-2 group-hover:text-[#1D4ED8] transition-colors">
+                  {project.title}
+                </h3>
+                <p className="text-sm text-[#6B6B6B] leading-relaxed mb-4 line-clamp-2">
+                  {project.description}
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {project.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="px-2 py-0.5 rounded-md text-xs font-medium bg-[#F0EDE8] text-[#6B6B6B]"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </motion.article>
           ))}
         </div>
-
       </div>
-
-      <ProjectModal
-        project={selectedProject}
-        onClose={() => setSelectedProject(null)}
-      />
     </section>
-  );
+  )
 }

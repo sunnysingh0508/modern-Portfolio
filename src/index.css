@@ -1,152 +1,53 @@
 @import "tailwindcss";
 
 @theme {
-  --font-serif: 'Cormorant Garamond', Georgia, serif;
-  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-display: 'Cormorant Garamond', serif;
   --font-handwriting: 'Caveat', cursive;
-  --color-cream-bg: #FAF8F5;
-  --color-cream-card: #F4F1EA;
-  --color-charcoal: #141414;
-  --color-accent-blue: #1D4ED8;
+
+  --color-cream: #FAF8F5;
+  --color-ink: #141414;
+  --color-muted: #6B6B6B;
+  --color-accent: #1D4ED8;
+  --color-accent-light: #3B82F6;
+  --color-warm: #C8963C;
+  --color-surface: #F0EDE8;
+  --color-border: #E2DDD7;
 }
 
-/* Base custom styles */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  background-color: #FAF8F5;
-  color: #141414;
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
+  background-color: var(--color-cream);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
-/* Editorial subtle grid background pattern */
-.bg-grid-pattern {
-  background-size: 40px 40px;
-  background-image: 
-    linear-gradient(to right, rgba(20, 20, 20, 0.045) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(20, 20, 20, 0.045) 1px, transparent 1px);
+::selection {
+  background-color: var(--color-accent);
+  color: white;
 }
 
-.bg-grid-dense {
-  background-size: 24px 24px;
-  background-image: 
-    linear-gradient(to right, rgba(20, 20, 20, 0.035) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(20, 20, 20, 0.035) 1px, transparent 1px);
-}
-
-/* Handwritten annotation font */
-.font-handwriting {
-  font-family: 'Caveat', cursive;
-}
-
-/* Serif headers */
-.font-serif-editorial {
-  font-family: 'Cormorant Garamond', Georgia, serif;
-}
-
-/* Smooth grayscale transition for photos */
-.grayscale-to-color {
-  filter: grayscale(100%);
-  transition: filter 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.grayscale-to-color:hover {
-  filter: grayscale(0%);
-  transform: scale(1.015);
-}
-
-/* ─── Hero Portrait — grayscale → full colour on hover ─────────────────── */
-.grayscale-portrait,
-.portrait-crop-container {
-  filter: grayscale(100%);
-  transition: filter 700ms cubic-bezier(0.16, 1, 0.3, 1);
-  cursor: default;
-  user-select: none;
-}
-.portrait-wrapper:hover .grayscale-portrait,
-.portrait-wrapper:hover .portrait-crop-container,
-.grayscale-portrait:hover,
-.portrait-crop-container:hover {
-  filter: grayscale(0%);
-}
-
-/* ─── Hero two-column layout ─────────────────────────────────────────────── */
-/* Desktop: keep the CSS grid defined inline in JSX                         */
-/* Mobile: stack columns vertically */
-@media (max-width: 768px) {
-  section#home > div {
-    display: flex !important;
-    flex-direction: column !important;
-    grid-template-columns: unset !important;
-    padding-top: 100px !important;
-    padding-bottom: 32px !important;
-    min-height: unset !important;
-    gap: 0 !important;
-  }
-
-  .hero-left-col {
-    order: 1;
-    padding-right: 0 !important;
-    text-align: left;
-    margin-bottom: 40px;
-  }
-
-  .hero-right-col {
-    order: 2;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-  }
-
-  .hero-portrait {
-    max-height: 60vw !important;
-    width: auto;
-    max-width: 85% !important;
-  }
-}
-
-/* Scrollbar styling */
+/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #FAF8F5;
+  background: var(--color-cream);
 }
 ::-webkit-scrollbar-thumb {
-  background: #D1CDC7;
+  background: var(--color-border);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #141414;
+  background: var(--color-muted);
 }
-
-/* Blue Highlight Block like screenshot reference */
-.editorial-blue-highlight {
-  background-color: #1D4ED8;
-  color: #FFFFFF;
-  padding: 0.1em 0.35em;
-  display: inline-block;
-  line-height: 1.1;
-  letter-spacing: -0.01em;
-}
-
-/* Editorial project image — muted by default, vivid on hover */
-.project-img-editorial {
-  filter: grayscale(55%) contrast(0.95) brightness(0.92);
-  transition: filter 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.group:hover .project-img-editorial {
-  filter: grayscale(0%) contrast(1) brightness(1);
-  transform: scale(1.03);
-}
-
-/* Modal fade-in animation */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.animate-fadeIn {
-  animation: fadeIn 0.25s ease-out;
-}
-
