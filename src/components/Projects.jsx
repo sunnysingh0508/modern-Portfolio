@@ -12,7 +12,7 @@ import { useInView } from '../hooks/useInView'
 const projects = [
   {
     id: 'campusmitra-ai',
-    title: 'CampusMitra AI (bsdk-ai)',
+    title: 'CampusMitra AI',
     subtitle: 'Smart College Life OS · Full Stack AI Platform',
     description:
       'A Smart College Life OS that helps students manage CGPA, attendance, assignments, notes, and timetables in one clean dashboard. Built with real-time insights, safe bunk tracking, and AI-powered study assistance.',
