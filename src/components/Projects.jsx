@@ -58,18 +58,6 @@ const projects = [
     live: null,
     featured: true,
   },
-  {
-    id: 'hackathon-challenge',
-    title: 'WEB-A-THON 2.0 Hackathon',
-    subtitle: 'ARENA · Lovely Professional University · Feb 2026',
-    description:
-      'Participated in the competitive 24-hour WEB-A-THON 2.0 Hackathon organized by ARENA at LPU in collaboration with MentorX and HoverRobotix. Engineered functional software prototypes combining modern web interfaces with rapid algorithmic problem-solving.',
-    tags: ['React.js', 'Python', 'JavaScript', 'Problem-Solving', 'Next.js'],
-    image: '/assets/project_iot.jpg',
-    github: 'https://github.com/sunnysingh0508',
-    live: null,
-    featured: false,
-  },
 ]
 
 export default function Projects() {
