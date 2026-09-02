@@ -11,50 +11,62 @@ import { useInView } from '../hooks/useInView'
 
 const projects = [
   {
-    id: 'finance-management',
-    title: 'Financial Data & Invoice Management',
-    subtitle: 'BRS Finjasee Pvt. Ltd. · Apr 2024 – Apr 2025',
+    id: 'campusmitra-ai',
+    title: 'CampusMitra AI (bsdk-ai)',
+    subtitle: 'Smart College Life OS · Full Stack AI Platform',
     description:
-      'Handled 500+ monthly transactions including data entry, invoicing, and payment posting, improving processing speed by 30%. Resolved 50+ monthly vendor billing discrepancies, reducing payment delays by 25%.',
-    tags: ['Tally Accounting', 'MS Excel', 'Financial Reporting', 'Data Accuracy'],
-    image: '/assets/project_caretaker.jpg',
-    github: 'https://github.com',
+      'A Smart College Life OS that helps students manage CGPA, attendance, assignments, notes, and timetables in one clean dashboard. Built with real-time insights, safe bunk tracking, and AI-powered study assistance.',
+    tags: ['Next.js', 'TypeScript', 'AI Assistance', 'Student OS', 'Tailwind CSS'],
+    image: '/assets/project_campusmitra.jpg',
+    github: 'https://github.com/sunnysingh0508/campusmitra-ai',
+    live: null,
+    featured: true,
+  },
+  {
+    id: 'veldora',
+    title: 'Veldora Cloud Storage',
+    subtitle: 'Cloud Storage & Telegram Infrastructure · Next.js / TypeScript',
+    description:
+      'A secure cloud storage application built with Next.js and TypeScript, featuring API Routes for backend services, MongoDB for metadata management, and Telegram Bot infrastructure as a cost-effective storage backend.',
+    tags: ['Next.js', 'TypeScript', 'MongoDB', 'Cloud Storage', 'Telegram API'],
+    image: '/assets/project_veldora.jpg',
+    github: 'https://github.com/sunnysingh0508/veldora',
+    live: null,
+    featured: true,
+  },
+  {
+    id: 'ai-resume-screening-portal',
+    title: 'AI-Based Resume Screening Portal',
+    subtitle: 'Machine Learning & NLP Candidate Evaluation',
+    description:
+      'An intelligent resume screening platform that parses candidate resumes, extracts relevant skillsets using NLP algorithms, calculates JD match scores, and ranks applicants to streamline recruiter workflows.',
+    tags: ['Python', 'NLP / AI', 'React.js', 'Machine Learning', 'Resume Parser'],
+    image: '/assets/project_resume_portal.jpg',
+    github: 'https://github.com/sunnysingh0508/AI-based-resume-screening-portal',
+    live: null,
+    featured: true,
+  },
+  {
+    id: 'lpucart-admin',
+    title: 'LPUCart Admin Dashboard',
+    subtitle: 'Campus E-Commerce & Merchant Management System',
+    description:
+      'Comprehensive administration and analytics dashboard for the LPUCart campus marketplace platform. Features real-time sales metrics, order processing, inventory control, and vendor performance monitoring.',
+    tags: ['TypeScript', 'React.js', 'Admin Dashboard', 'E-Commerce', 'REST API'],
+    image: '/assets/project_lpucart.jpg',
+    github: 'https://github.com/sunnysingh0508/LPUCart-Admin',
     live: null,
     featured: true,
   },
   {
     id: 'hackathon-challenge',
-    title: 'WEB-A-THON 2.0 (24h Hackathon Project)',
+    title: 'WEB-A-THON 2.0 Hackathon',
     subtitle: 'ARENA · Lovely Professional University · Feb 2026',
     description:
-      'Participated in the competitive 24-hour WEB-A-THON 2.0 Hackathon organized by ARENA at LPU in collaboration with MentorX and HoverRobotix. Developed functional software prototypes combining modern web interfaces with rapid algorithmic problem-solving under tight deadlines.',
+      'Participated in the competitive 24-hour WEB-A-THON 2.0 Hackathon organized by ARENA at LPU in collaboration with MentorX and HoverRobotix. Engineered functional software prototypes combining modern web interfaces with rapid algorithmic problem-solving.',
     tags: ['React.js', 'Python', 'JavaScript', 'Problem-Solving', 'Next.js'],
     image: '/assets/project_iot.jpg',
-    github: 'https://github.com',
-    live: null,
-    featured: true,
-  },
-  {
-    id: 'nextjs-web-platform',
-    title: 'Next.js Modern Web Applications',
-    subtitle: 'Frontend & Full Stack Architecture',
-    description:
-      'Engineered dynamic, highly responsive web platforms utilizing Next.js (App Router), React.js, and Tailwind CSS with clean component structures, SEO optimization, and smooth animations.',
-    tags: ['Next.js', 'React.js', 'Tailwind CSS', 'TypeScript', 'Responsive Design'],
-    image: '/assets/project_visualizer.jpg',
-    github: 'https://github.com',
-    live: 'https://example.com',
-    featured: true,
-  },
-  {
-    id: 'education-delivery',
-    title: 'Interactive Teaching & Classroom Framework',
-    subtitle: 'Local School · Apr 2023 – Mar 2024',
-    description:
-      'Delivered targeted instruction and structured lesson plans that boosted student academic performance by 50% and increased classroom engagement by 70% using modern educational technology tools.',
-    tags: ['Classroom Management', 'MS Office', 'Time Management', 'Targeted Instruction'],
-    image: '/assets/project_line_fault.jpg',
-    github: null,
+    github: 'https://github.com/sunnysingh0508',
     live: null,
     featured: false,
   },
@@ -87,7 +99,7 @@ export default function Projects() {
             </h2>
           </div>
           <a
-            href="https://github.com"
+            href="https://github.com/sunnysingh0508"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 text-sm font-semibold text-[#6B6B6B] hover:text-[#141414] transition-colors group"

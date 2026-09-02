@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { FileText, ArrowUpRight } from 'lucide-react'
 import { useInView } from '../hooks/useInView'
 
 const fadeUp = {
@@ -57,6 +58,18 @@ export default function About() {
                     <span className="font-semibold text-[#141414]">High School (PCM) — Ketan Convent</span>
                     <span className="text-[#6B6B6B]">2022</span>
                   </div>
+                </div>
+                <div className="pt-2">
+                  <a
+                    href="/assets/sunny-singh-resume.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-xs font-semibold px-3.5 py-2 rounded-lg bg-[#141414] text-white hover:bg-[#1D4ED8] transition-colors"
+                  >
+                    <FileText size={14} />
+                    View Full Resume (PDF)
+                    <ArrowUpRight size={13} />
+                  </a>
                 </div>
               </div>
             </div>

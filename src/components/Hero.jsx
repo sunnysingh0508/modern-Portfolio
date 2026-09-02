@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { ArrowDown, Mail } from 'lucide-react'
+import { ArrowDown, Mail, FileText } from 'lucide-react'
 
 const GithubIcon = ({ size = 20 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
@@ -80,6 +80,16 @@ export default function Hero() {
               View My Work
             </a>
             <a
+              href="/assets/sunny-singh-resume.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              id="hero-resume-btn"
+              className="flex items-center gap-2 px-6 py-3 rounded-full bg-[#1D4ED8] text-white font-semibold text-sm hover:bg-[#1e40af] shadow-md hover:shadow-lg transition-all duration-300"
+            >
+              <FileText size={16} />
+              Download CV / Resume
+            </a>
+            <a
               href="#contact"
               id="hero-contact-btn"
               className="px-6 py-3 rounded-full border border-[#E2DDD7] text-[#141414] font-semibold text-sm hover:border-[#141414] transition-colors duration-300"
@@ -96,7 +106,7 @@ export default function Hero() {
             className="flex items-center gap-5"
           >
             <a
-              href="https://github.com"
+              href="https://github.com/sunnysingh0508"
               target="_blank"
               rel="noopener noreferrer"
               id="hero-github-link"

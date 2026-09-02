@@ -71,8 +71,8 @@ export default function Contact() {
                 },
                 {
                   icon: GithubIcon,
-                  label: 'github.com',
-                  href: 'https://github.com',
+                  label: 'github.com/sunnysingh0508',
+                  href: 'https://github.com/sunnysingh0508',
                 },
                 {
                   icon: MapPin,
