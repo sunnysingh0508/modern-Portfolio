@@ -1,3 +1,4 @@
+import os
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, HRFlowable
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -5,169 +6,297 @@ from reportlab.lib import colors
 from reportlab.lib.units import inch
 
 pdf_path = "public/assets/sunny-singh-resume.pdf"
+
+# Document setup with tight margins to fit perfectly on a single page
 doc = SimpleDocTemplate(
     pdf_path,
     pagesize=letter,
-    leftMargin=0.5 * inch,
-    rightMargin=0.5 * inch,
-    topMargin=0.4 * inch,
-    bottomMargin=0.4 * inch
+    leftMargin=36,   # 0.5 inch
+    rightMargin=36,
+    topMargin=28,
+    bottomMargin=28
 )
 
 styles = getSampleStyleSheet()
 
-# Custom styles
+# Colors
+HEADER_BLUE = colors.HexColor('#1E3A8A')  # Classic navy/indigo
+TEXT_DARK = colors.HexColor('#111827')
+MUTED_DARK = colors.HexColor('#374151')
+LINE_COLOR = colors.HexColor('#1E3A8A')
+GRAY_LINE = colors.HexColor('#9CA3AF')
+
+# Styles using Times-Roman / Times-Bold for classic professional Ivy/ATS look
 name_style = ParagraphStyle(
     'NameStyle',
-    parent=styles['Normal'],
-    fontName='Helvetica-Bold',
-    fontSize=17,
-    leading=21,
-    alignment=1, # Center
-    textColor=colors.HexColor('#111827')
+    fontName='Times-Bold',
+    fontSize=20,
+    leading=22,
+    textColor=HEADER_BLUE
 )
 
-contact_style = ParagraphStyle(
-    'ContactStyle',
-    parent=styles['Normal'],
-    fontName='Helvetica',
-    fontSize=8.5,
+contact_left_style = ParagraphStyle(
+    'ContactLeft',
+    fontName='Times-Roman',
+    fontSize=9,
     leading=12,
-    alignment=1, # Center
-    textColor=colors.HexColor('#374151')
+    textColor=MUTED_DARK
 )
 
-section_title = ParagraphStyle(
+contact_right_style = ParagraphStyle(
+    'ContactRight',
+    fontName='Times-Roman',
+    fontSize=9,
+    leading=12,
+    alignment=2, # Right aligned
+    textColor=MUTED_DARK
+)
+
+section_title_style = ParagraphStyle(
     'SectionTitle',
-    parent=styles['Normal'],
-    fontName='Helvetica-Bold',
-    fontSize=11,
-    leading=14,
-    textColor=colors.HexColor('#111827'),
-    spaceBefore=4,
-    spaceAfter=2
+    fontName='Times-Bold',
+    fontSize=10.5,
+    leading=12,
+    textColor=HEADER_BLUE,
+    spaceBefore=0,
+    spaceAfter=0
 )
 
-body_text = ParagraphStyle(
-    'BodyText',
-    parent=styles['Normal'],
-    fontName='Helvetica',
-    fontSize=8.5,
-    leading=11.5,
-    textColor=colors.HexColor('#1f2937')
-)
-
-bold_body = ParagraphStyle(
-    'BoldBody',
-    parent=styles['Normal'],
-    fontName='Helvetica-Bold',
-    fontSize=8.5,
-    leading=11.5,
-    textColor=colors.HexColor('#111827')
-)
-
-bullet_text = ParagraphStyle(
-    'BulletText',
-    parent=styles['Normal'],
-    fontName='Helvetica',
+body_style = ParagraphStyle(
+    'BodyStyle',
+    fontName='Times-Roman',
     fontSize=8.5,
     leading=11,
-    leftIndent=12,
-    firstLineIndent=-8,
-    textColor=colors.HexColor('#1f2937')
+    textColor=TEXT_DARK
+)
+
+bold_style = ParagraphStyle(
+    'BoldStyle',
+    fontName='Times-Bold',
+    fontSize=8.5,
+    leading=11,
+    textColor=TEXT_DARK
+)
+
+bullet_style = ParagraphStyle(
+    'BulletStyle',
+    fontName='Times-Roman',
+    fontSize=8.5,
+    leading=11,
+    leftIndent=10,
+    firstLineIndent=-6,
+    textColor=TEXT_DARK
+)
+
+skill_title_style = ParagraphStyle(
+    'SkillTitle',
+    fontName='Times-Bold',
+    fontSize=8.5,
+    leading=11,
+    textColor=TEXT_DARK
+)
+
+skill_desc_style = ParagraphStyle(
+    'SkillDesc',
+    fontName='Times-Roman',
+    fontSize=8.5,
+    leading=11,
+    textColor=TEXT_DARK
+)
+
+table_left_style = ParagraphStyle(
+    'TableLeft',
+    fontName='Times-Roman',
+    fontSize=8.5,
+    leading=11,
+    textColor=TEXT_DARK
+)
+
+table_right_style = ParagraphStyle(
+    'TableRight',
+    fontName='Times-Roman',
+    fontSize=8.5,
+    leading=11,
+    alignment=2, # Right
+    textColor=TEXT_DARK
 )
 
 elements = []
 
-# Name and Contact
-elements.append(Paragraph("SUNNY SINGH", name_style))
-elements.append(Spacer(1, 2))
-elements.append(Paragraph("Aligarh, India &bull; +91 8449612175 &bull; sunnykashyap1608@gmail.com &bull; www.linkedin.com/in/sunny-singh0506", contact_style))
-elements.append(Spacer(1, 6))
-
-def add_section(title):
-    elements.append(Paragraph(title, section_title))
-    elements.append(HRFlowable(width="100%", thickness=0.75, color=colors.HexColor('#111827'), spaceAfter=4, spaceBefore=1))
-
-# Summary
-add_section("Summary")
-elements.append(Paragraph("Finance assistant and educator skilled in data accuracy, financial reporting, classroom management, technology tools, and problem-solving. Experienced in handling accounting tasks, improving academic outcomes, and delivering organized documentation.", body_text))
-elements.append(Spacer(1, 4))
-
-# Achievements
-add_section("Achievements")
-achievements = [
-    "&bull; Participated in national-level hackathons (24-hour innovation challenge).",
-    "&bull; Boosted student performance by 50% with targeted teaching methods.",
-    "&bull; Increased classroom engagement by 70% through redesigned lessons.",
-    "&bull; Completed Advanced Diploma in Computer Applications (MS Office, Tally)."
+# --- HEADER (2 Columns: Left Name + Address/Links, Right Email + Phone) ---
+header_data = [
+    [
+        Paragraph("<b>SUNNY SINGH</b>", name_style),
+        Paragraph("<b>Email:</b> sunnykashyap1608@gmail.com<br/><b>Mobile:</b> +91 8449612175", contact_right_style)
+    ],
+    [
+        Paragraph("Aligarh, India<br/>LinkedIn: www.linkedin.com/in/sunny-singh0506<br/>GitHub: github.com/sunnysingh0508", contact_left_style),
+        Paragraph("", contact_right_style)
+    ]
 ]
-for a in achievements:
-    elements.append(Paragraph(a, bullet_text))
+header_table = Table(header_data, colWidths=[330, 210])
+header_table.setStyle(TableStyle([
+    ('VALIGN', (0,0), (-1,-1), 'TOP'),
+    ('TOPPADDING', (0,0), (-1,-1), 0),
+    ('BOTTOMPADDING', (0,0), (-1,-1), 0),
+    ('LEFTPADDING', (0,0), (-1,-1), 0),
+    ('RIGHTPADDING', (0,0), (-1,-1), 0),
+]))
+elements.append(header_table)
+elements.append(Spacer(1, 4))
+elements.append(HRFlowable(width="100%", thickness=0.8, color=colors.HexColor('#1E3A8A'), spaceAfter=4, spaceBefore=0))
+
+def add_section_header(title):
+    elements.append(Paragraph(title.upper(), section_title_style))
+    elements.append(HRFlowable(width="100%", thickness=0.6, color=colors.HexColor('#1E3A8A'), spaceAfter=3, spaceBefore=1))
+
+# --- SUMMARY ---
+add_section_header("SUMMARY")
+elements.append(Paragraph("Finance assistant and educator skilled in data accuracy, financial reporting, classroom management, technology tools, and problem-solving. Experienced in handling accounting tasks, improving academic outcomes, and delivering organized documentation.", body_style))
 elements.append(Spacer(1, 4))
 
-# Experience
-add_section("Experience")
-elements.append(Paragraph("<b>Assistant Finance Manager</b> &mdash; BRS Finjasee Pvt. Ltd., Aligarh <font color='#4b5563'>Apr 2024 &ndash; Apr 2025</font>", body_text))
-elements.append(Paragraph("&bull; Handled 500+ monthly transactions including data entry, invoicing, and payment posting, improving processing speed by 30%", bullet_text))
-elements.append(Paragraph("&bull; Resolved 50+ vendor billing discrepancies monthly, reducing payment delays by 25%", bullet_text))
-elements.append(Spacer(1, 2))
-elements.append(Paragraph("<b>Teacher</b> &mdash; Local School, Aligarh <font color='#4b5563'>Apr 2023 &ndash; Mar 2024</font>", body_text))
-elements.append(Paragraph("&bull; Delivered instruction, improved student outcomes, and prepared lesson plans.", bullet_text))
-elements.append(Spacer(1, 4))
-
-# Projects
-add_section("Projects")
-projects = [
-    "&bull; <b>Veldora</b> &mdash; Veldora is a secure cloud storage application built with Next.js and TypeScript, featuring API Routes for backend services, MongoDB for metadata management, and Telegram Bot infrastructure as a service.",
-    "&bull; <b>Campusmitra-AI</b> &mdash; A Smart College Life OS that helps students manage CGPA, attendance, assignments, notes, and timetables in one clean dashboard, with real-time insights, safe bunk tracking, and AI-powered features.",
-    "&bull; <b>AI-based Resume Screening Portal</b> &mdash; AI-based resume screening portal project.",
-    "&bull; <b>LPUCart-Admin</b> &mdash; Administration project for the LPUCart platform."
+# --- SKILLS ---
+add_section_header("SKILLS")
+skills_rows = [
+    [
+        Paragraph("<b>Frontend & Web Development</b>", skill_title_style),
+        Paragraph("HTML5, CSS3, JavaScript (ES6+), TypeScript, React.js, Next.js (App Router), Tailwind CSS, Responsive Web Design", skill_desc_style)
+    ],
+    [
+        Paragraph("<b>Programming & Technologies</b>", skill_title_style),
+        Paragraph("C / C++, DBMS, Python, TypeScript, JavaScript, Artificial Intelligence (AI), SQL, Problem-Solving, Algorithms", skill_desc_style)
+    ],
+    [
+        Paragraph("<b>Databases, Cloud & Tools</b>", skill_title_style),
+        Paragraph("MongoDB, Vercel, Render, Git & GitHub, VS Code, Tally Accounting Software, MS Office (Word, Excel, PPT), Financial Reporting, Data Entry & Documentation", skill_desc_style)
+    ],
+    [
+        Paragraph("<b>Management & Professional</b>", skill_title_style),
+        Paragraph("Classroom Management, Time Management, Event Coordination, Targeted Teaching, Team Collaboration", skill_desc_style)
+    ]
 ]
-for p in projects:
-    elements.append(Paragraph(p, bullet_text))
-elements.append(Spacer(1, 4))
-
-# Education
-add_section("Education")
-education = [
-    "<b>B-Tech Computer Science</b> &mdash; LPU (2025&ndash;2029)",
-    "<b>Intermediate (PCM)</b> &mdash; IPS Aligarh (2024)",
-    "<b>High School (PCM)</b> &mdash; Ketan Convent (2022)"
-]
-for e in education:
-    elements.append(Paragraph(e, body_text))
-elements.append(Spacer(1, 4))
-
-# Skills
-add_section("Skills")
-skills_data = [
-    [Paragraph("HTML5, CSS3, JavaScript (ES6+)", body_text), Paragraph("TypeScript", body_text)],
-    [Paragraph("React.js", body_text), Paragraph("Python", body_text)],
-    [Paragraph("Next.js (App Router)", body_text), Paragraph("Tailwind CSS", body_text)],
-    [Paragraph("Responsive Web Design", body_text), Paragraph("MS Office (Word, Excel, PPT)", body_text)],
-    [Paragraph("Tally Accounting Software", body_text), Paragraph("Data Entry & Documentation", body_text)],
-    [Paragraph("Problem-Solving", body_text), Paragraph("Classroom Management", body_text)],
-    [Paragraph("Event Coordination", body_text), Paragraph("Time Management", body_text)]
-]
-skills_table = Table(skills_data, colWidths=[260, 260])
+skills_table = Table(skills_rows, colWidths=[150, 390])
 skills_table.setStyle(TableStyle([
-    ('TOPPADDING', (0,0), (-1,-1), 0.5),
-    ('BOTTOMPADDING', (0,0), (-1,-1), 0.5),
+    ('VALIGN', (0,0), (-1,-1), 'TOP'),
+    ('TOPPADDING', (0,0), (-1,-1), 0.75),
+    ('BOTTOMPADDING', (0,0), (-1,-1), 0.75),
     ('LEFTPADDING', (0,0), (-1,-1), 0),
     ('RIGHTPADDING', (0,0), (-1,-1), 0),
 ]))
 elements.append(skills_table)
 elements.append(Spacer(1, 4))
 
-# Languages
-add_section("Languages")
-elements.append(Paragraph("English (Moderate) &bull; Hindi (Proficient) &bull; Urdu (Advanced)", body_text))
+# --- PROJECTS ---
+add_section_header("PROJECTS")
+projects_list = [
+    "&bull; <b>Veldora</b> &mdash; Secure cloud storage application built with Next.js and TypeScript, featuring API Routes, MongoDB metadata management, and Telegram Bot infrastructure.",
+    "&bull; <b>Campusmitra-AI</b> &mdash; Smart College Life OS for CGPA, attendance, assignments, notes, and timetables, with real-time insights, safe bunk tracking, and AI-powered features.",
+    "&bull; <b>AI-based Resume Screening Portal</b> &mdash; AI-based resume screening portal project.",
+    "&bull; <b>LPUCart-Admin</b> &mdash; Administration project for the LPUCart platform."
+]
+for proj in projects_list:
+    elements.append(Paragraph(proj, bullet_style))
 elements.append(Spacer(1, 4))
 
-# Courses
-add_section("Courses")
-elements.append(Paragraph("Advanced Diploma in Computer Applications &bull; Time Management &bull; Participation in Hackathons &bull; Introduction to HTML,CSS,JavaScript &bull; Introduction to Artificial Intelligence (AI)", body_text))
+# --- EXPERIENCE ---
+add_section_header("EXPERIENCE")
+# Job 1
+exp1_header = [
+    [
+        Paragraph("<b>Assistant Finance Manager</b> &mdash; <b>BRS Finjasee Pvt. Ltd., Aligarh</b>", table_left_style),
+        Paragraph("Apr 2024 &ndash; Apr 2025", table_right_style)
+    ]
+]
+t_exp1 = Table(exp1_header, colWidths=[420, 120])
+t_exp1.setStyle(TableStyle([
+    ('VALIGN', (0,0), (-1,-1), 'TOP'),
+    ('TOPPADDING', (0,0), (-1,-1), 0),
+    ('BOTTOMPADDING', (0,0), (-1,-1), 0),
+    ('LEFTPADDING', (0,0), (-1,-1), 0),
+    ('RIGHTPADDING', (0,0), (-1,-1), 0),
+]))
+elements.append(t_exp1)
+elements.append(Paragraph("&bull; Handled 500+ monthly transactions including data entry, invoicing, and payment posting, improving processing speed by 30%.", bullet_style))
+elements.append(Paragraph("&bull; Resolved 50+ vendor billing discrepancies monthly, reducing payment delays by 25%.", bullet_style))
+elements.append(Spacer(1, 2))
 
+# Job 2
+exp2_header = [
+    [
+        Paragraph("<b>Teacher</b> &mdash; <b>Local School, Aligarh</b>", table_left_style),
+        Paragraph("Apr 2023 &ndash; Mar 2024", table_right_style)
+    ]
+]
+t_exp2 = Table(exp2_header, colWidths=[420, 120])
+t_exp2.setStyle(TableStyle([
+    ('VALIGN', (0,0), (-1,-1), 'TOP'),
+    ('TOPPADDING', (0,0), (-1,-1), 0),
+    ('BOTTOMPADDING', (0,0), (-1,-1), 0),
+    ('LEFTPADDING', (0,0), (-1,-1), 0),
+    ('RIGHTPADDING', (0,0), (-1,-1), 0),
+]))
+elements.append(t_exp2)
+elements.append(Paragraph("&bull; Delivered instruction, improved student outcomes, and prepared lesson plans.", bullet_style))
+elements.append(Spacer(1, 4))
+
+# --- ACHIEVEMENTS ---
+add_section_header("ACHIEVEMENTS")
+achievements_list = [
+    "&bull; Participated in national-level hackathons (24-hour innovation challenge).",
+    "&bull; Boosted student performance by 50% with targeted teaching methods.",
+    "&bull; Increased classroom engagement by 70% through redesigned lessons.",
+    "&bull; Completed Advanced Diploma in Computer Applications (MS Office, Tally)."
+]
+for ach in achievements_list:
+    elements.append(Paragraph(ach, bullet_style))
+elements.append(Spacer(1, 4))
+
+# --- EDUCATION ---
+add_section_header("EDUCATION")
+edu_rows = [
+    [
+        Paragraph("&bull; <b>B-Tech Computer Science</b> &mdash; LPU", table_left_style),
+        Paragraph("2025&ndash;2029", table_right_style)
+    ],
+    [
+        Paragraph("&bull; <b>Intermediate (PCM)</b> &mdash; IPS Aligarh", table_left_style),
+        Paragraph("2024", table_right_style)
+    ],
+    [
+        Paragraph("&bull; <b>High School (PCM)</b> &mdash; Ketan Convent", table_left_style),
+        Paragraph("2022", table_right_style)
+    ]
+]
+edu_table = Table(edu_rows, colWidths=[440, 100])
+edu_table.setStyle(TableStyle([
+    ('VALIGN', (0,0), (-1,-1), 'TOP'),
+    ('TOPPADDING', (0,0), (-1,-1), 0.5),
+    ('BOTTOMPADDING', (0,0), (-1,-1), 0.5),
+    ('LEFTPADDING', (0,0), (-1,-1), 0),
+    ('RIGHTPADDING', (0,0), (-1,-1), 0),
+]))
+elements.append(edu_table)
+elements.append(Spacer(1, 4))
+
+# --- LANGUAGES ---
+add_section_header("LANGUAGES")
+elements.append(Paragraph("English (Moderate) &bull; Hindi (Proficient) &bull; Urdu (Advanced)", body_style))
+elements.append(Spacer(1, 4))
+
+# --- COURSES & CERTIFICATES ---
+add_section_header("COURSES & CERTIFICATES")
+certificates_list = [
+    "&bull; <b>Community Development Project</b> &mdash; Times Foundation & The Times of India (in collab with LPU) &mdash; Certified Completion",
+    "&bull; <b>Advanced Diploma in Computer Applications (ADCA)</b> &mdash; National Institute of Computer Education &mdash; Issued 2024",
+    "&bull; <b>Effective Time Management (MOOC)</b> &mdash; Tech Veda &mdash; Issued 29 Oct 2025",
+    "&bull; <b>Introduction to Artificial Intelligence (AI)</b> &mdash; IBM / Coursera &mdash; Issued 04 Feb 2026",
+    "&bull; <b>Introduction to HTML, CSS, & JavaScript</b> &mdash; IBM / Coursera",
+    "&bull; <b>WEB-A-THON 2.0 (University-Level Hackathon)</b> &mdash; Certificate of Participation",
+    "&bull; <b>PROMPT BUILDER 2026 (Technical Innovation Challenge)</b> &mdash; Technical Participation Certificate &mdash; LPU"
+]
+for cert in certificates_list:
+    elements.append(Paragraph(cert, bullet_style))
+
+# Build document
 doc.build(elements)
-print("PDF generated successfully at", pdf_path)
+print(f"Resume PDF successfully generated at {pdf_path}")
